@@ -2,7 +2,9 @@
   <div>
       <div class="app-head">
           <div class="app-head-inner">
+            <router-link :to="{path: '/'}">
               <img src="../assets/logo.png">
+            </router-link>
               <div class="head-nav">
                   <ul class="nav-list">
                       <li @click="logClick">登录</li>
@@ -33,13 +35,13 @@
         <reg-form></reg-form>
       </my-dialog>
       <my-dialog :is-show="isShowLogDialog" @on-close="closeDialog('isShowLogDialog')">
-        <log-form></log-form>
+        <log-form @has-log="onSuccessLog"></log-form>
       </my-dialog>
   </div>
 </template>
 
 <script>
-import Dialog from './dialog'
+import Dialog from './base/dialog'
 import LogForm from './logForm'
 import RegForm from './regForm'
 export default {
@@ -67,8 +69,10 @@ export default {
     },
     closeDialog (attr) {
       this[attr]= false
+    },
+    onSuccessLog (data) {
+      this.name = data.name
     }
-
   }
 }
 </script>
