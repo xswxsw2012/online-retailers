@@ -10,9 +10,14 @@ import DetailAnaPage from './pages/detail/analysis'
 import DetailCouPage from './pages/detail/count'
 import DetailForPage from './pages/detail/forecast'
 import DetailPubPage from './pages/detail/publish'
+import OrderListPage from './pages/orderList'
+import VCalendar from 'v-calendar'
+import 'v-calendar/lib/v-calendar.min.css'
 
+import Store from './store'
 Vue.use(VueRouter)
 Vue.use(VueResource)
+Vue.use(VCalendar)
 
 let router = new VueRouter({
   mode: 'history',
@@ -20,6 +25,10 @@ let router = new VueRouter({
     {
       path: '/',
       component: IndexPage
+    },
+    {
+      path: '/orderList',
+      component: OrderListPage
     },
     {
       path:'/detail',
@@ -53,6 +62,7 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
+  store: Store,
   components: { Layout },
   template: '<Layout/>'
 })

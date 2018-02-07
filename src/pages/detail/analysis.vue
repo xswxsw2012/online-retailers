@@ -18,7 +18,7 @@
                   产品类型：
               </div>
               <div class="sales-board-line-right">
-                  <v-selection :selections="productTypes" @on-change="onParamChange('buyType', $event)"></v-selection>
+                  <v-selection :selections="productTypes" @on-change="onParamChange('buyTypes', $event)"></v-selection>
               </div>
           </div>
           <div class="sales-board-line">
@@ -80,7 +80,33 @@
           <li>用户所在地理区域分布状况等</li>
         </ul>
       </div>
-      <my-dialog :is-show="isShowPayDialog" @on-close="hidePayDialog">test</my-dialog>
+      <my-dialog :is-show="isShowPayDialog" @on-close="hidePayDialog">
+          <table class="buy-dialog-table">
+              <tr>
+                  <th>购买数量</th>
+                  <th>产品类型</th>
+                  <th>有效时间</th>
+                  <th>产品版本</th>
+                  <th>总价</th>
+              </tr>
+              <tr>
+                  <td>{{ buyNum }}</td>
+                  <td>{{ buyTypes.label }}</td>
+                  <td>{{ period.label }}</td>
+                  <td>
+                      <span v-for="(item,index) in versions" :key="index">{{ item.label }}</span>
+                  </td>
+                  <td>{{ price }}</td>
+              </tr>
+          </table>
+          <h3 class="buy-dialog-title">请选择银行</h3>
+          <bank-chooser @on-change="onChangeBanks"></bank-chooser>
+          <div class="button buy-dialog-btn" @click="confirmBuy">确认购买</div>
+          
+      </my-dialog>
+      <my-dialog :is-show="isShowErrDialog" @on-close="hideErrDialog">支付失败！</my-dialog>
+      <check-order :is-show-check-dialog="isShowCheckOrder"
+      @on-close-check-dialog="hideCheckOrder"></check-order>
   </div>
 </template>
 <script>
@@ -89,6 +115,8 @@ import vChooser from '../../components/base/chooser'
 import vCounter from '../../components/base/counter'
 import vMulChooser from '../../components/base/multiplyChooser'
 import MyDialog from '../../components/base/dialog'
+import bankChooser from '../../components/base/bankChooser'
+import checkOrder from '../../components/base/checkOrder'
 import _ from 'lodash'
 export default {
   components: {
@@ -96,11 +124,16 @@ export default {
       vCounter,
       vChooser,
       vMulChooser,
-      MyDialog
+      MyDialog,
+      bankChooser,
+      checkOrder    
   },  
   data () {
       return {
         isShowPayDialog: false,
+        isShowCheckOrder: false,
+        isShowErrDialog: false,
+        bankId: null,
         buyNum: 0,  
         price: 0,
         versions: [],
@@ -185,19 +218,70 @@ export default {
     //  },
      hidePayDialog () {
          this.isShowPayDialog = false
+     },
+     hideErrDialog () {
+         this.isShowErrDialog = false
+     },
+     onChangeBanks (bankObj) {
+         this.bankId = bankObj.id
+     },
+     hideCheckOrder () {
+         this.isShowCheckOrder = false
+     },
+     confirmBuy () {
+        //  let buyVersionsArrary = _.map(this.versions, (item) => {
+        //      return item.value
+        //  })
+        //  let reqParams = {
+        //      buyNumber: this.buyNumber,
+        //      buyTypes: this.buyTypes.value,
+        //      period: this.period.value,
+        //      version: buyVersionsArrary.join(','),
+        //      bankId: this.bankId
+        //  }
+        //  this.$http.post('/api/createOrder', reqParams)
+        //  .then((res) => {
+        //      this.orderId = res.data.orderId
+                // this.isShowCheckOrder = true
+                // this.isShowPayDialog = false
+        //  },(err) => {
+                // this.isShowBuyDialog = false
+                // this.isShowErrDialog = true  
+        //  })
+        this.isShowCheckOrder = true
+        this.isShowPayDialog = false
      }
   },
-  /**
   mounted () {
-      this.buyNum = 0
-      this.buyType = this.buyType[0]
-      this.versions = this.versionList[0]
+      this.buyNum = 1
+      this.buyTypes = this.productTypes[0]
+      this.versions = [this.versionList[0]]
       this.period = this.periodList[0]
-      this.getPrice()
+    //   this.getPrice()
   }
-  */
 }
 </script>
-<style>
-
+<style scoped>
+.buy-dialog-title{
+    font-size: 16px;
+    font-weight: bold;
+}
+.buy-dialog-btn{
+    margin-top: 20px;
+}
+.buy-dialog-table{
+    width: 100%;
+    margin-bottom: 20px;
+}
+.buy-dialog-table td,
+.buy-dialog-table th{
+    border: 1px solid #e3e3e3;
+    text-align: center;
+    padding: 5px 0;
+}
+.buy-dialog-table th{
+    background: #4fc08d;
+    color: #fff;
+    border: 1px solid #4fc08d;
+}
 </style>

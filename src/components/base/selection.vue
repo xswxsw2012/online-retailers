@@ -6,12 +6,13 @@
       </div>
       <div class="selection-list" v-if="isDrop">
           <ul>
-              <li v-for="(item,index) in selections" @click="chooseSelection(index)">{{ item.label }}</li>
+              <li v-for="(item,index) in selections" :key="index" @click="chooseSelection(index)">{{ item.label }}</li>
           </ul>
       </div>
   </div>
 </template>
 <script>
+import {eventBus} from '../../eventBus'
 export default {
     props: {
         selections: {
@@ -28,13 +29,19 @@ export default {
           nowIndex: 0  
         }
     },
+    mounted () {
+        eventBus.$on('reset-component', () => {
+            this.isDrop = false
+        })
+    },
     methods: {
-        toggleDrop () {
+        toggleDrop (event) {
+            event.stopPropagation()
             this.isDrop = !this.isDrop
         },
         chooseSelection (index) {
             this.nowIndex = index;
-            this.isDrop = false;
+            // this.isDrop = false;
             this.$emit('on-change', this.selections[this.nowIndex])    
         }
     }
